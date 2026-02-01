@@ -5,7 +5,8 @@ This n8n workflow automates the process of managing Dr. Strange appointments. Us
 
 The workflow is designed for easy integration with other tools, allowing you to call it via a simple HTTP request.
 
-<img width="470" height="194" alt="image" src="https://github.com/user-attachments/assets/661b387b-17fc-4c94-9086-f674e8406049" />
+![WhatsApp Image 2026-02-01 at 23 50 25](https://github.com/user-attachments/assets/b4977b0e-88c5-474b-b346-71cf1eb1248f)
+
 
 
 **Webhook URL**
