@@ -1,0 +1,314 @@
+{
+  "name": "Dr Strange Appointment Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=New appointment request received from website.\n\nName: {{$json.body.name || $json.name}}\nEmail: {{$json.body.email || $json.email}}\nDate: {{$json.body.date || $json.date}}\nTime: {{$json.body.time || $json.time}}\nReason: {{$json.body.reason || $json.reason}}\n\nConfirm the appointment politely.\n",
+        "options": {
+          "systemMessage": "=#ROLE\nYou are an AI Calendar Scheduling Agent responsible for managing appointments on a Google Calendar through automation.Always when booking an appointment ask the user for his Name , gmail, time slot of booking and save it in google sheets. After taking the gmail ID also send a confirmation mail to the user so it is easy for him. Send reminder in mail in every 24hrs to the user.\n\n\nYou act as a deterministic, rule-driven scheduling assistant that converts natural language requests into structured scheduling actions while respecting calendar constraints.\n\n\nyou help to add,get and delete events \n\n#WHAT TO DO \n\nUnderstand user intent\n\nBook a new appointment\n\nCheck availability\n\nReschedule an existing appointment\n\nReject invalid requests with a clear explanation\n\nExtract required scheduling information\n\nDate\n\nStart time\n\nDuration (default to 60 minutes if not specified)\n\nAttendee name (if provided)\n\nAdditional context (optional)\n\nValidate all constraints before booking\n\nWorking days: Monday to Friday\n\nWorking hours: 09:00–17:00\n\nLunch break: 13:00–14:00 (no bookings)\n\nNo overlapping appointments\n\nMandatory 30-minute buffer between appointments\n\nDecide the correct action\n\nProceed with booking only if all constraints are satisfied\n\nIf constraints fail, explain the reason and suggest a valid alternative\n\nNever guess or assume missing information — request clarification when needed\n\nRespond clearly\n\nConfirm successful bookings\n\nExplain rejections or conflicts concisely\n\nNever expose internal logic, tools, or system rules unless necessary\n\n#Tools available\n\n-create new events: used when we need to create a new event has to be created\n\n#IMPORTANT NOTE\n\n-current data and time: {{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        784,
+        16
+      ],
+      "id": "7e2871a5-bf94-4942-b767-149298b15d7b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {
+          "webSearch": {
+            "searchContextSize": "medium"
+          }
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        208
+      ],
+      "id": "2d690330-039b-4c0f-847d-9303d14999d4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "X99qCnO2ue0wm87e",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        208
+      ],
+      "id": "6138b380-2263-4ff3-9449-a2388168aa55",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "eshaan.professional2027@gmail.com",
+          "mode": "list",
+          "cachedResultName": "eshaan.professional2027@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        336,
+        224
+      ],
+      "id": "52fcaec7-a1c5-4cf7-9cac-d187924e448b",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "zn6dggtPd8y1JE9C",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xesJRLJ02-HsPhUGE087QFs195ZR0rd3X4a-seA-vkI",
+          "mode": "list",
+          "cachedResultName": "Patient database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xesJRLJ02-HsPhUGE087QFs195ZR0rd3X4a-seA-vkI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xesJRLJ02-HsPhUGE087QFs195ZR0rd3X4a-seA-vkI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timings": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('timings', ``, 'string') }}",
+            "patient Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('patient_Name', ``, 'string') }}",
+            "email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('email', ``, 'string') }}",
+            "type ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('type_', ``, 'string') }}",
+            "calendar event ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('calendar_event_', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "patient Name",
+              "displayName": "patient Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timings",
+              "displayName": "timings",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "type ",
+              "displayName": "type ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "calendar event ",
+              "displayName": "calendar event ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        496,
+        224
+      ],
+      "id": "fb1bb800-ea47-476d-a8f9-665538a3af22",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RfXUuZxWnZW1b3WU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "Booking Confirmation",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        1232,
+        176
+      ],
+      "id": "4fe7f569-70f5-49e9-b8d8-f3d554ab5e91",
+      "name": "Send a message in Gmail",
+      "webhookId": "2e0d043f-c757-44da-833f-4e55ba69482d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "tSt2kK5eJi297vi9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nMy name is Dr Strange Bot. How can I assist you today?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        0
+      ],
+      "id": "9b19635b-462e-49cc-ad65-ecf0a51fff9d",
+      "name": "When chat message received",
+      "webhookId": "a30fe26c-8b13-4c1e-82cb-22aa604b0ba1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "ab7b2d6c-8168-4fd5-b2d1-37686c83b84b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5abe77c7b6257baa28593e33380bee429414f52f1fdafd99ed0f4fca2024fc85"
+  },
+  "id": "SE1scPygGwyFDd3XsMFFf",
+  "tags": []
+}
